@@ -37,7 +37,7 @@ rm -rf dms-displayoutput
 
 Enable the plugin in the DMS plugins tab, or run the following command to display the menu:
 ```bash
-dms ipc call displayOutput open
+dms ipc call displayOutput toggle
 ```
 
 ## Configuration
