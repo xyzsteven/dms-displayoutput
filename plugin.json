@@ -1,0 +1,21 @@
+{
+    "$schema": "https://github.com/AvengeMedia/DankMaterialShell/raw/refs/heads/master/PLUGINS/plugin-schema.json",
+    "id": "displayOutput",
+    "name": "Display Output",
+    "description": "Display output settings for hyprland | fork from Display Settings plugins by lucyfire",
+    "version": "0.0.1",
+    "author": "xyzsteven",
+    "icon": "computer",
+    "type": "daemon",
+    "capabilities": [
+        "manage-displays"
+    ],
+    "component": "./DisplayOutputWidget.qml",
+    "settings": "./DisplayOutput.qml",
+    "requires_dms": ">=1.4.0",
+    "requires": [],
+    "permissions": [
+        "settings_read",
+        "settings_write"
+    ]
+}
