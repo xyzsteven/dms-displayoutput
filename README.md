@@ -17,6 +17,18 @@ Registers 3 new ipc calls to dms
 
 ## Installation
 
+### From Plugin Registry (Recommended)
+
+You can easily install this plugin directly using the DMS plugin manager:
+```bash
+dms plugins install displayOutput
+```
+
+Then, enable the plugin in the DMS plugins tab, or run the following command to display the menu:
+```bash
+dms ipc call displayOutput toggle
+```
+
 ### Manual Installation via Git
 Since this is a standalone plugin, you can install it by cloning this repository directly into your DMS plugins folder.
 
