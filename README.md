@@ -20,18 +20,24 @@ Registers 3 new ipc calls to dms
 ### Manual Installation via Git
 Since this is a standalone plugin, you can install it by cloning this repository directly into your DMS plugins folder.
 
+Clone this repository:
 ```bash
-# Clone this repository
-git clone [https://github.com/xyzsteven/dms-displayoutput.git](https://github.com/xyzsteven/dms-displayoutput.git)
+git clone https://github.com/xyzsteven/dms-displayoutput.git
+```
 
-# Copy the contents to the DMS plugins directory as 'displayOutput'
+Copy the contents to the DMS plugins directory as `displayOutput`:
+```bash
 cp -r dms-displayoutput ~/.config/DankMaterialShell/plugins/displayOutput
+```
 
-# You can now delete the cloned repo if you want
+You can now delete the cloned repo if you want:
+```bash
 rm -rf dms-displayoutput
+```
 
-# Enable in DMS plugins tab, or
-# run `dms ipc call displayOutput open` to display the menu
+Enable the plugin in the DMS plugins tab, or run the following command to display the menu:
+```bash
+dms ipc call displayOutput open
 ```
 
 ## Configuration
