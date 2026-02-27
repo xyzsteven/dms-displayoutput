@@ -1,6 +1,6 @@
 # Display Output
 
-A Hyprland DankMaterialShell plugin that allows you to manage your display outputs (PC Only, Mirror, Extend, Second Screen Only).
+A Hyprland DankMaterialShell plugin that allows you to manage your display outputs (Single Display, Mirror, Extend).
 
 > **Credit & Acknowledgement:**
 > This project is a modified fork of the [Display Settings](https://github.com/Lucyfire/dms-plugins/tree/master/displaySettings) plugin originally created by [Lucyfire](https://github.com/Lucyfire).
@@ -9,11 +9,21 @@ A Hyprland DankMaterialShell plugin that allows you to manage your display outpu
 
 ## Features
 
-Registers 3 new ipc calls to dms
+- **Smart Auto-Fallback**: Seamlessly listens to Hyprland's hardware events in the background. If a monitor or projector is unplugged, it automatically detects the change and switches to the remaining active screen to prevent getting stuck on a black/disabled display. Perfect for laptops and multi-monitor setups!
+- **Quick Display Modes**: Easily switch between Single Display, Duplicate/Mirror, and Extend modes.
+- **Registers 3 new ipc calls to dms**:
 
-- `dms ipc call displayOutput toggle`
-- `dms ipc call displayOutput open`
-- `dms ipc call displayOutput close`
+```bash
+dms ipc call displayOutput toggle
+```
+
+```bash
+dms ipc call displayOutput open
+```
+
+```bash
+dms ipc call displayOutput close
+```
 
 ## Installation
 
@@ -24,7 +34,7 @@ You can easily install this plugin directly using the DMS plugin manager:
 dms plugins install displayOutput
 ```
 
-Then, enable the plugin in the DMS plugins tab, or run the following command to display the menu:
+Then, enable the plugin in the DMS plugins tab, then run the following command to display the menu:
 ```bash
 dms ipc call displayOutput toggle
 ```
@@ -47,7 +57,7 @@ You can now delete the cloned repo if you want:
 rm -rf dms-displayoutput
 ```
 
-Enable the plugin in the DMS plugins tab, or run the following command to display the menu:
+Enable the plugin in the DMS plugins tab, then run the following command to display the menu:
 ```bash
 dms ipc call displayOutput toggle
 ```
@@ -58,9 +68,11 @@ None at the moment.
 
 ## Requirements
 
-- DankMaterialShell >= 1.4.0
+- DankMaterialShell >= 1.4.3
 - Hyprland
     - a monitorv2 definition in your hyprland.conf file.
+- `socat`
+    - Required for the background socket watcher to listen to Hyprland events dynamically. **Make sure it is installed on your system**.
 
 ## Compatibility
 

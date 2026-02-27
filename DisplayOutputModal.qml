@@ -24,19 +24,50 @@ DankModal {
     
     ListModel {
         id: mainModel
-        ListElement { name: "PC Screen Only"; icon: "laptop"; mode: "pc_only" }
-        ListElement { name: "Duplicate / Mirror"; icon: "content_copy"; mode: "mirror" }
-        ListElement { name: "Extend"; icon: "branding_watermark"; mode: "extend" }
-        ListElement { name: "Second Screen Only"; icon: "monitor"; mode: "second_only" }
+        ListElement { name: "Single Display"; desc: "Choose specific monitor"; icon: "computer"; mode: "single" }
+        ListElement { name: "Duplicate / Mirror"; desc: "Clone primary screen"; icon: "content_copy"; mode: "mirror" }
+        ListElement { name: "Extend"; desc: "Use multiple screens"; icon: "branding_watermark"; mode: "extend" }
     }
 
     ListModel {
         id: extendModel
-        ListElement { name: "Extend Right"; icon: "arrow_forward"; pos: "right" }
-        ListElement { name: "Extend Left"; icon: "arrow_back"; pos: "left" }
+        ListElement { name: "Extend Right"; desc: "Secondary on the right"; icon: "arrow_forward"; pos: "right" }
+        ListElement { name: "Extend Left"; desc: "Secondary on the left"; icon: "arrow_back"; pos: "left" }
     }
 
-    property var activeModel: currentView === "main" ? mainModel : extendModel
+    ListModel {
+        id: singleModel
+    }
+
+    Connections {
+        target: DisplayOutputService
+        function onMonitorsUpdated() {
+            singleModel.clear();
+            let mons = DisplayOutputService.monitors;
+            for (let i = 0; i < mons.length; i++) {
+                let m = mons[i];
+                let interfaceName = m.name;
+                let makeModel = (m.make && m.model) ? (m.make + " " + m.model) : m.description;
+                if (!makeModel || makeModel.trim() === "") makeModel = "Generic Display";
+                
+                singleModel.append({
+                    name: interfaceName,
+                    desc: makeModel,
+                    icon: "monitor",
+                    monitorName: interfaceName,
+                    mode: "",
+                    pos: ""
+                });
+            }
+        }
+    }
+
+    property var activeModel: {
+        if (currentView === "main") return mainModel;
+        if (currentView === "extend") return extendModel;
+        return singleModel;
+    }
+    
     property int optionCount: activeModel.count
 
     function openCentered() {
@@ -84,6 +115,9 @@ DankModal {
             if (currentView === "extend") {
                 currentView = "main";
                 selectedIndex = 2;
+            } else if (currentView === "single") {
+                currentView = "main";
+                selectedIndex = 0;
             } else {
                 close();
             }
@@ -103,13 +137,20 @@ DankModal {
             if (mode === "extend") {
                 currentView = "extend";
                 selectedIndex = 0;
+            } else if (mode === "single") {
+                currentView = "single";
+                selectedIndex = 0;
             } else {
                 DisplayOutputService.applyMode(mode);
                 close();
             }
-        } else {
+        } else if (currentView === "extend") {
             let pos = extendModel.get(selectedIndex).pos;
             DisplayOutputService.applyMode("extend", pos);
+            close();
+        } else if (currentView === "single") {
+            let monName = singleModel.get(selectedIndex).monitorName;
+            DisplayOutputService.applySingleMode(monName);
             close();
         }
     }
@@ -130,7 +171,7 @@ DankModal {
                     spacing: 10
 
                     DankIcon {
-                        visible: root.currentView === "extend"
+                        visible: root.currentView === "extend" || root.currentView === "single"
                         name: "arrow_back"
                         size: Theme.iconSize
                         color: Theme.primary
@@ -139,14 +180,23 @@ DankModal {
                             anchors.fill: parent
                             cursorShape: Qt.PointingHandCursor
                             onClicked: {
-                                root.currentView = "main";
-                                root.selectedIndex = 2;
+                                if (root.currentView === "extend") {
+                                    root.currentView = "main";
+                                    root.selectedIndex = 2;
+                                } else if (root.currentView === "single") {
+                                    root.currentView = "main";
+                                    root.selectedIndex = 0;
+                                }
                             }
                         }
                     }
 
                     StyledText {
-                        text: root.currentView === "main" ? "Project Display" : "Extend Position"
+                        text: {
+                            if (root.currentView === "main") return "Project Display";
+                            if (root.currentView === "extend") return "Extend Position";
+                            return "Select Monitor";
+                        }
                         font.pixelSize: Theme.fontSizeLarge
                         color: Theme.surfaceText
                         font.weight: Font.Medium
@@ -169,14 +219,14 @@ DankModal {
                 DankListView {
                     width: parent.width
                     spacing: Theme.spacingS
-                    height: (50 * root.optionCount) + Theme.spacingS
+                    height: (60 * root.optionCount) + Theme.spacingS
                     model: root.activeModel
 
                     delegate: Rectangle {
                         property bool isSelected: root.selectedIndex === index
 
                         width: parent.width
-                        height: 50
+                        height: 60
                         radius: Theme.cornerRadius
 
                         color: {
@@ -204,12 +254,20 @@ DankModal {
                                 anchors.verticalCenter: parent.verticalCenter
                             }
 
-                            StyledText {
-                                text: model.name
-                                font.pixelSize: Theme.fontSizeMedium
-                                color: Theme.surfaceText
-                                font.weight: Font.Medium
+                            Column {
                                 anchors.verticalCenter: parent.verticalCenter
+                                StyledText {
+                                    text: model.name
+                                    font.pixelSize: Theme.fontSizeMedium
+                                    color: Theme.surfaceText
+                                    font.weight: Font.Medium
+                                }
+                                StyledText {
+                                    visible: model.desc !== ""
+                                    text: model.desc
+                                    font.pixelSize: 11
+                                    color: Theme.surfaceVariantText
+                                }
                             }
                         }
 
